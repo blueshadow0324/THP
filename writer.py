@@ -1,4 +1,8 @@
 import json
+import datetime
+
+date = datetime.datetime.now().date()
+print(date)
 
 data = {
     "111": "spelare_x",
@@ -6,5 +10,19 @@ data = {
     "333": "spelare_z"
 }
 
-with open("codes.json", "w", encoding="utf-8") as file:
-    json.dump(data, file, indent=4)
+players = {
+    "111": {
+        "fys": {
+            "": ""
+        },
+        "phy": {
+            "": ""
+        }
+    },
+    "222": {
+        "phy": "abcd",
+        "fys": 300
+    }
+}
+with open("codes.json", "r", encoding="utf-8") as file:
+    codes_D = json.load(data, file)

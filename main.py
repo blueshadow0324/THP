@@ -1,10 +1,15 @@
 import streamlit as st
 import json
 import time
+import datetime
+import smtplib
+from email.message import EmailMessage
 
-st.title("Indev 1.6")
+st.title("Indev 1.8")
 code = ""
 submit = False
+date = datetime.datetime.now().date()
+print(date)
 
 # Initialize state
 if "step" not in st.session_state:
@@ -47,31 +52,62 @@ if st.session_state.get("_process"):
         st.rerun()
 elif st.session_state.step == 2:
     with st.form("FORM2"):
-        pos = st.checkbox("Bra")
-        med = st.checkbox("Medel")
-        neg = st.checkbox("Dåligt")
-        comment = st.text_input("Kommentar:")
-        submit = st.form_submit_button("Enter")
+        phy = {}
+        fys = {}
+
+        st.text("Knopp")
+        phy["pos"] = st.checkbox("Bra👍")
+        phy["med"] = st.checkbox("Medel😐")
+        phy["neg"] = st.checkbox("Dåligt👎 ")
+        phy["comment"] = st.text_input("Kommentar:")
+
+        st.divider()
+
+        st.text("Kropp")
+        fys["pos"] = st.checkbox(" Bra👍 ")
+        fys["med"] = st.checkbox(" Medel😐 ")
+        fys["neg"] = st.checkbox(" Dåligt👎 ")
+        fys["comment"] = st.text_input("Kommentar: ")
+        submit = st.form_submit_button("Skicka In!")
+
+        currentCode = st.session_state._submitted_code
+
         if submit:
-            if pos == True:
-                st.dialog("Skickat in resultatet!")
-                time.sleep(1)
-                st.session_state._process = False
-                st.session_state.step = 1
-                st.rerun()
-            else:
-                if med == True:
-                    st.dialog("Skickat in resultatet!")
-                    time.sleep(1)
-                    st.session_state._process = False
-                    st.session_state.step = 1
-                    st.rerun()
-                else:
-                    if neg == True:
-                        st.dialog("Skickat in resultatet!")
-                        time.sleep(1)
-                        st.session_state._process = False
-                        st.session_state.step = 1
-                        st.rerun()
-                    else:
-                        st.warning("Inget resultatet är sant!")
+            for key in fys:
+                if fys[key]:
+                    for k in phy:
+                        if phy[k]:
+                            st.dialog("Skickat in resultatet!")
+                            try:
+                                with open(f"{date}.json", "r") as file:
+                                    data = json.load(file)
+                            except:
+                                data = {}
+                                with open(f"{data}.json", "w") as file:
+                                    json.dump(data, file, indent=4)
+                            try:
+                                with open(f"{date}.json", "r") as file:
+                                    data = json.load(file)
+                            except:
+                                with open(f"{data}.json", "w") as file:
+                                    json.dump(data, file, indent=4)
+
+                            if st.session_state._submitted_code not in data:
+                                data[st.session_state._submitted_code] = {}
+                                data[st.session_state._submitted_code]["phy"] = {}
+                                data[st.session_state._submitted_code]["fys"] = {}
+                            with open(f"{date}.json", "w") as file:
+                                json.dump(data, file, indent=4)
+                            with open(f"{date}.json", "r") as file:
+                                data = json.load(file)
+                            for i in fys:
+                                data[st.session_state._submitted_code]["fys"][i] = fys[i]
+                            for j in phy:
+                                data[st.session_state._submitted_code]["phy"][j] = phy[j]
+                            with open(f"{date}.json", "w") as file:
+                                json.dump(data, file, indent=4)
+                            time.sleep(1)
+                            st.session_state._process = False
+                            st.session_state.step = 1
+                            st.rerun()
+            st.warning("Inget resultatet är sant!")

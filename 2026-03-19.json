@@ -1,0 +1,16 @@
+{
+    "111": {
+        "phy": {
+            "pos": false,
+            "med": false,
+            "neg": true,
+            "comment": "123"
+        },
+        "fys": {
+            "pos": true,
+            "med": false,
+            "neg": false,
+            "comment": "23"
+        }<
+    }
+}

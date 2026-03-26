@@ -1,0 +1,44 @@
+{
+    "111": {
+        "phy": {
+            "pos": false,
+            "med": false,
+            "neg": true,
+            "comment": "324234243"
+        },
+        "fys": {
+            "pos": false,
+            "med": false,
+            "neg": true,
+            "comment": "234322344235"
+        }
+    },
+    "222": {
+        "phy": {
+            "pos": false,
+            "med": true,
+            "neg": false,
+            "comment": "1243"
+        },
+        "fys": {
+            "pos": false,
+            "med": false,
+            "neg": true,
+            "comment": "342235"
+        }
+    },
+    "67": {
+        "phy": {
+            "pos": false,
+            "med": false,
+            "neg": true,
+            "comment": "435"
+        },
+        "fys": {
+            "pos": false,
+            "med": true,
+            "neg": false,
+            "comment": "4355"
+        }
+    }
+}

@@ -2,14 +2,44 @@ import streamlit as st
 import json
 import time
 import datetime
-import smtplib
-from email.message import EmailMessage
+from mail import send
 
 st.title("Indev 1.8")
 code = ""
 submit = False
 date = datetime.datetime.now().date()
 print(date)
+
+def get_body():
+    with open(f"{date}.json", "r") as f:
+        raw = json.load(f)
+        list = []
+        for players, states in raw.items():
+            physical = states["phy"]
+            fysical = states["fys"]
+
+            physicalState = None
+            fysicalState = None
+
+            for i in physical:
+                if physical[i] == True:
+                    if i == "pos":
+                        physicalState = "Bra!"
+                    if i == "mid":
+                        physicalState = "Medel"
+                    if i == "neg":
+                        physicalState = "Dåligt"
+            for j in fysical:
+                if physical[j] == True:
+                    if j == "pos":
+                        fysicalState = "Bra!"
+                    if j == "mid":
+                        fysicalState = "Medel"
+                    if j == "neg":
+                        fysicalState = "Dåligt"
+
+            list.append(f"{players}|Knopp: {physicalState}|Kropp: {fysicalState}|Kommentar: (Kropp, Knopp): {fysical["comment"]}, {physical["comment"]}")
+        return "\n".join(list)
 
 # Initialize state
 if "step" not in st.session_state:
@@ -29,13 +59,18 @@ header {visibility: hidden;}
 """, unsafe_allow_html=True)
 
 if st.session_state.step == 1:
-    with st.form("FORM"):
+    with st. form("FORM"):
         code = st.text_input("Kod:")
         submit = st.form_submit_button("Enter")
 
     if submit:
-      st.session_state._submitted_code = code
-      st.session_state._process = True
+        if not submit == "Admin":
+            st.session_state._submitted_code = code
+            st.session_state._process = True
+        else:
+            st.dialog("Skickat Mail!")
+            send(get_body())
+            print("sent")
 
 if st.session_state.get("_process"):
     with open("codes.json", "r", encoding="utf-8") as file:
@@ -45,9 +80,11 @@ if st.session_state.get("_process"):
             st.session_state.step = 2
         except:
             if not code == "":
-                 st.warning("Fel spelar kod")
-                 time.sleep(1)
-
+                if code == "Admin":
+                    send(get_body())
+                else:
+                    st.warning("Fel spelar kod")
+                    time.sleep(1)
         st.session_state._process = False
         st.rerun()
 elif st.session_state.step == 2:

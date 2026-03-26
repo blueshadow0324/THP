@@ -1,0 +1,29 @@
+                            try:
+                                with open(f"{date}.json", "r", encoding="utf-8") as file:
+                                    data = json.load(file)
+                            except:
+                                with open(f"{date}.json", "w", encoding="utf-8") as file:
+                                    empty = {}
+                                    json.dump(empty, file, indent=4)
+                            try:
+                                for item in fys:
+                                    data[st.session_state._submitted_code]["fys"][item] = fys[item]
+                                for items in phy:
+                                    data[st.session_state._submitted_code]["phy"][items] = phy[items]
+                            except:
+                                 with open("data.json", "w") as file:
+                                    wtr = {
+                                        "111": {
+                                            "fys": {
+                                                "": ""
+                                            },''
+                                            "phy": {
+                                                "": ""
+                                            }
+                                        }
+                                    }
+                                    json.dump(wtr, file, indent=4)
+                                for item in fys:
+                                    data[st.session_state._submitted_code]["fys"][item] = fys[item]
+                                for items in phy:
+                                    data[st.session_state._submitted_code]["phy"][items] = phy[items]

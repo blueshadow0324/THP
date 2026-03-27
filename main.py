@@ -21,22 +21,31 @@ def get_body():
             physicalState = None
             fysicalState = None
 
+            phyNumb = {"p": 0, "m": 0, "n": 0}
+            fysNumb = {"p": 0, "m": 0, "n": 0}
+
             for i in physical:
                 if physical[i] == True:
                     if i == "pos":
                         physicalState = "Bra!"
+                        phyNumb["p"] = phyNumb["p"] + 1
                     if i == "mid":
                         physicalState = "Medel"
+                        phyNumb["m"] = phyNumb["m"] + 1
                     if i == "neg":
                         physicalState = "Dåligt"
+                        phyNumb["n"] = phyNumb["n"] + 1
             for j in fysical:
                 if physical[j] == True:
                     if j == "pos":
                         fysicalState = "Bra!"
+                        fysNumb["p"] = fysNumb["p"] + 1
                     if j == "mid":
                         fysicalState = "Medel"
+                        fysNumb["m"] = fysNumb["m"] + 1
                     if j == "neg":
                         fysicalState = "Dåligt"
+                         fysNumb["n"] = fysNumb["m"] + 1
 
             list.append(f"{players}|Knopp: {physicalState}|Kropp: {fysicalState}|Kommentar: (Kropp, Knopp): {fysical["comment"]}, {physical["comment"]}")
         return "\n".join(list)

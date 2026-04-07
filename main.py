@@ -59,6 +59,9 @@ def get_body():
         list.append(f"Kropp: Bra:{procentGoodFys}, Medel:{procentMidFys}, Dåligt:{procentNegFys}")
         list.append(f"Knopp: Bra:{procentGoodPhy}, Medel:{procentMidPhy}, Dåligt:{procentNegPhy}")
 
+        with open("reportCache", "w") as f:
+            f.write("\n".joon(list))
+
         return "\n".join(list)
 
 # Initialize state

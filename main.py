@@ -56,7 +56,7 @@ def get_body():
         procentNegFys = fysNumb["n"] / totalPlayers * 100
         procentNegPhy = phyNumb["n"] / totalPlayers * 100
 
-        list.append(f"Kropp: Bra:{procentGoodFys}, Medel:{procentMidFys}, Dåligt:{procentNegPhy}")
+        list.append(f"Kropp: Bra:{procentGoodFys}, Medel:{procentMidFys}, Dåligt:{procentNegFys}")
         list.append(f"Knopp: Bra:{procentGoodPhy}, Medel:{procentMidPhy}, Dåligt:{procentNegPhy}")
 
         return "\n".join(list)

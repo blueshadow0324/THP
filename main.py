@@ -49,10 +49,15 @@ def get_body():
 
             list.append(f"{players}|Knopp: {physicalState}|Kropp: {fysicalState}|Kommentar: (Kropp, Knopp): {fysical["comment"]}, {physical["comment"]}")
         totalPlayers = fysNumb["p"] + fysNumb["m"] + fysNumb["n"]
-        procentGoodFys = fysNumb["P"] / totalPlayers * 100
-        procentGoodPhy = phyNumb["P"] / totalPlayers * 100
-        list.append(f"{procentGoodFys} svarade att dem mår bra för kroppen!")
-        list.append(f"{procentGoodPhy} svarade att deras knopp mår bra")
+        procentGoodFys = fysNumb["p"] / totalPlayers * 100
+        procentGoodPhy = phyNumb["p"] / totalPlayers * 100
+        procentMidFys = fysNumb["m"] / totalPlayers * 100
+        procentMidPhy = phyNumb["m"] / totalPlayers * 100
+        procentNegFys = fysNumb["n"] / totalPlayers * 100
+        procentNegPhy = phyNumb["n"] / totalPlayers * 100
+
+        list.append(f"Kropp: Bra:{procentGoodFys}, Medel:{procentMidFys}, Dåligt:{procentNegPhy}")
+        list.append(f"Knopp: Bra:{procentGoodPhy}, Medel:{procentMidPhy}, Dåligt:{procentNegPhy}")
 
         return "\n".join(list)
 

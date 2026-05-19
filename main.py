@@ -4,11 +4,12 @@ import time
 import datetime
 from mail import send
 
-st.title("Indev 1.8")
 code = ""
 submit = False
 date = datetime.datetime.now().date()
 print(date)
+stageTwo = False
+fullAns = {}
 
 def get_body():
     with open(f"{date}.json", "r") as f:
@@ -60,7 +61,7 @@ def get_body():
         list.append(f"Knopp: Bra:{procentGoodPhy}, Medel:{procentMidPhy}, Dåligt:{procentNegPhy}")
 
         with open("reportCache", "w") as f:
-            f.write("\n".joon(list))
+            f.write("\n".join(list))
 
         return "\n".join(list)
 
@@ -82,18 +83,52 @@ header {visibility: hidden;}
 """, unsafe_allow_html=True)
 
 if st.session_state.step == 1:
-    with st. form("FORM"):
+    with st.form("FORM"):
         code = st.text_input("Kod:")
         submit = st.form_submit_button("Enter")
 
     if submit:
         if not submit == "Admin":
-            st.session_state._submitted_code = code
-            st.session_state._process = True
+            if not stageTwo:
+                st.session_state._submitted_code = code
+                st.session_state._process = True
+            else:
+                st.session_state._submitted_code = code
+                st.session_state.step = 3
         else:
             st.dialog("Skickat Mail!")
             send(get_body())
             print("sent")
+
+if st.session_state.step == 3:
+    with st.form("FORM"):
+        ans = {}
+        ans["touch"] = st.radio(
+            "1. Antal touch",
+            ["För få", "Lagom"]
+        )
+        ans["touchReason"] = st.radio(
+            "2. Motivering av touch",
+            ["Träningsvalet", "Jag själv"]
+
+        )
+        ans["intensity"] = st.radio(
+            "3. Intensitet",
+            ["Låg", "Lagom", "Hög"]
+
+        )
+        ans["IntensityReason"] = st.radio(
+            "4. Motevering till Intesitet",
+            ["Träningsvalet", "Jag själv"]
+        )
+        ans["matchConnection"] = st.radio(
+            "5. Träningenskoppling till matchen",
+            ["Otydligt", "Tydligt"]
+        )
+
+        submit = st.form_submit_button("Skicka in!")
+        if submit:
+            fullAns[st.session_state._submitted_code] = ans
 
 if st.session_state.get("_process"):
     with open("codes.json", "r", encoding="utf-8") as file:
@@ -104,7 +139,11 @@ if st.session_state.get("_process"):
         except:
             if not code == "":
                 if code == "Admin":
-                    send(get_body())
+                    if not stageTwo:
+                        send(get_body())
+                        stageTwo = True
+                    else:
+                        send(get_body(stageTwo))
                 else:
                     st.warning("Fel spelar kod")
                     time.sleep(1)

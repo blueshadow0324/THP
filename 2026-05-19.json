@@ -1,0 +1,44 @@
+{
+    "111": {
+        "phy": {
+            "pos": true,
+            "med": false,
+            "neg": false,
+            "comment": "bra. tester 1"
+        },
+        "fys": {
+            "pos": false,
+            "med": true,
+            "neg": false,
+            "comment": "medel test 1"
+        }
+    },
+    "222": {
+        "phy": {
+            "pos": false,
+            "med": true,
+            "neg": false,
+            "comment": "med"
+        },
+        "fys": {
+            "pos": false,
+            "med": false,
+            "neg": true,
+            "comment": "daligt"
+        }
+    },
+    "333": {
+        "phy": {
+            "pos": true,
+            "med": true,
+            "neg": true,
+            "comment": "55"
+        },
+        "fys": {
+            "pos": false,
+            "med": true,
+            "neg": true,
+            "comment": "54"
+        }
+    }
+}

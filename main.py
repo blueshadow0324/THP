@@ -141,6 +141,7 @@ if st.session_state.get("_process"):
                 if code == "Admin":
                     if not stageTwo:
                         send(get_body())
+                        st.text("Skickat in meljet!")
                         stageTwo = True
                     else:
                         send(get_body(stageTwo))

@@ -10,6 +10,8 @@ code = ""
 submit = False
 date = datetime.datetime.now().date()
 print(date)
+password = "amkn krcs yhdv nskp"
+email = "hinke71@gmai.com"
 
 # Initialize state
 if "step" not in st.session_state:
@@ -44,9 +46,8 @@ if st.session_state.get("_process"):
             player_ID = data[st.session_state._submitted_code]  # String
             st.session_state.step = 2
         except:
-            if not code == "":
-                 st.warning("Fel spelar kod")
-                 time.sleep(1)
+            if "admin" == st.session_state._submitted_code:
+                send()
 
         st.session_state._process = False
         st.rerun()
@@ -111,3 +112,4 @@ elif st.session_state.step == 2:
                             st.session_state.step = 1
                             st.rerun()
             st.warning("Inget resultatet är sant!")
+def send():

@@ -22,6 +22,7 @@ if "step" not in st.session_state:
     st.session_state.step = 1
 
 def send():
+    body = "test"
     msg = MIMEMultipart()
     msg["From"] = email
     msg["To"] = email

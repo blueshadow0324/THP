@@ -4,6 +4,10 @@ import time
 import datetime
 import smtplib
 from email.message import EmailMessage
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+from email.mime.application import MIMEApplication
+import os
 
 st.title("Indev 1.8")
 code = ""
@@ -113,3 +117,21 @@ elif st.session_state.step == 2:
                             st.rerun()
             st.warning("Inget resultatet är sant!")
 def send():
+    msg = MIMEMultipart()
+    msg["From"] = email
+    msg["To"] = email
+    msg["Subject"] = str(date)
+    msg.attach(MIMEText(body, "test - debug"))
+
+    if attachment_path:
+        with open(attachment_path, "rb") as f:
+            part = MIMEApplication(f.read(), Name=os.path.basename(attachment_path))
+        part["Content-Disposition"] = f'attachment; filename="{os.path.basename(attachment_path)}"'
+        msg.attach(part)
+
+    with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
+        server.login(email, password)
+        server.send_message(msg)
+
+    print("Email sent successfully.")
+    

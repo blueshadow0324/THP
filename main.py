@@ -21,6 +21,19 @@ email = "hinke71@gmai.com"
 if "step" not in st.session_state:
     st.session_state.step = 1
 
+def send():
+    msg = MIMEMultipart()
+    msg["From"] = email
+    msg["To"] = email
+    msg["Subject"] = str(date)
+    msg.attach(MIMEText(body, "test - debug"))
+    
+    with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
+        server.login(email, password)
+        server.send_message(msg)
+
+    print("Email sent successfully.")
+
 st.markdown("""
 <style>
 /* Hide main menu */
@@ -116,16 +129,5 @@ elif st.session_state.step == 2:
                             st.session_state.step = 1
                             st.rerun()
             st.warning("Inget resultatet är sant!")
-def send():
-    msg = MIMEMultipart()
-    msg["From"] = email
-    msg["To"] = email
-    msg["Subject"] = str(date)
-    msg.attach(MIMEText(body, "test - debug"))
-    
-    with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
-        server.login(email, password)
-        server.send_message(msg)
 
-    print("Email sent successfully.")
     

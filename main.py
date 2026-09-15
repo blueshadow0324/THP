@@ -23,7 +23,8 @@ if "step" not in st.session_state:
     st.session_state.step = 1
 
 def send():
-    body = "test"
+    with open(f"{date}.json", "r") as file:
+        body = json.load(file)
     msg = MIMEMultipart()
     msg["From"] = sender_email
     msg["To"] = email

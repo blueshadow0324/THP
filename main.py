@@ -9,7 +9,7 @@ from email.mime.text import MIMEText
 from email.mime.application import MIMEApplication
 import os
 
-st.title("Indev 1.8")
+st.title("Svarsform")
 code = ""
 submit = False
 date = datetime.datetime.now().date()

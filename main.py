@@ -29,6 +29,7 @@ def send():
     msg["From"] = sender_email
     msg["To"] = email
     msg["Subject"] = str(date)
+    body = body.encode("utf-8", "replace").decode("utf-8")
     msg.attach(MIMEText(body, "plain", "utf-8"))
     
     with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:

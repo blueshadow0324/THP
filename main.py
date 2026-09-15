@@ -14,7 +14,8 @@ code = ""
 submit = False
 date = datetime.datetime.now().date()
 print(date)
-password = "amkn krcs yhdv nskp"
+password = "nrgp zrcz wpts dtck"'
+sender_email = "olsonwilliam11@gmail.com"
 email = "hinke71@gmai.com"
 
 # Initialize state
@@ -24,13 +25,13 @@ if "step" not in st.session_state:
 def send():
     body = "test"
     msg = MIMEMultipart()
-    msg["From"] = email
+    msg["From"] = sender_email
     msg["To"] = email
     msg["Subject"] = str(date)
     msg.attach(MIMEText(body, "test - debug"))
     
     with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
-        server.login(email, password)
+        server.login(sender_email, password)
         server.send_message(msg)
 
     print("Email sent successfully.")

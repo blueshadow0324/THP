@@ -16,7 +16,7 @@ date = datetime.datetime.now().date()
 print(date)
 password = "nrgp zrcz wpts dtck"
 sender_email = "olsonwilliam11@gmail.com"
-email = "hinke71@gmai.com"
+email = "hinke71@gmail.com"
 
 # Initialize state
 if "step" not in st.session_state:

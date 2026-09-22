@@ -23,20 +23,34 @@ if "step" not in st.session_state:
     st.session_state.step = 1
 
 def send():
-    with open(f"{date}.json", "r") as file:
-        body = json.load(file)
+    try:
+        with open(f"{date}.json", "r", encoding="utf-8") as file:
+            data = json.load(file)
+    except FileNotFoundError:
+        print(f"No file found for {date}.json")
+        return
+    except json.JSONDecodeError as e:
+        print(f"Invalid JSON in {date}.json: {e}")
+        return
+
+    # Turn the parsed JSON back into readable text for the email body
+    body_text = json.dumps(data, indent=2, ensure_ascii=False)
+
     msg = MIMEMultipart()
     msg["From"] = sender_email
     msg["To"] = email
     msg["Subject"] = str(date)
-    body = body.encode("utf-8", "replace").decode("utf-8")
-    msg.attach(MIMEText(body, "plain", "utf-8"))
-    
-    with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
-        server.login(sender_email, password)
-        server.send_message(msg)
+    msg.attach(MIMEText(body_text, "plain", "utf-8"))
 
-    print("Email sent successfully.")
+    try:
+        with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
+            server.login(sender_email, password)
+            server.send_message(msg)
+        print("Email sent successfully.")
+    except smtplib.SMTPAuthenticationError:
+        print("Login failed — check that GMAIL_APP_PASSWORD is a valid Gmail App Password.")
+    except smtplib.SMTPException as e:
+        print(f"Failed to send email: {e}")
 
 st.markdown("""
 <style>

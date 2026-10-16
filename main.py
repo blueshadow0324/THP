@@ -25,6 +25,17 @@ def notify(text, ok=True):
     st.session_state.msg = (text, ok)
 
 def send():
+      try:
+        with open(f"{date}.json", "r", encoding="utf-8") as file:
+            data = json.load(file)
+    except FileNotFoundError:
+        notify(f"No file found for {date}.json", False)
+        return
+    except json.JSONDecodeError as e:
+        notify(f"Invalid JSON in {date}.json: {e}", False)
+        return
+
+    body_text = json.dumps(data, indent=2, ensure_ascii=False)  # <- this line must be here
     # CHANGED: send over HTTPS (Brevo API) instead of SMTP
     api_key = os.environ.get("BREVO_API_KEY") or st.secrets.get("BREVO_API_KEY", "")
     try:

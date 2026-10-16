@@ -57,22 +57,6 @@ def send():
     except requests.RequestException as e:
         notify(f"Failed to send email: {e}", False)
 
-    msg = MIMEMultipart()
-    msg["From"] = sender_email
-    msg["To"] = email
-    msg["Subject"] = str(date)
-    msg.attach(MIMEText(body_text, "plain", "utf-8"))
-
-    try:
-        with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
-            server.login(sender_email, password)
-            server.send_message(msg)
-        notify("Email sent sucessfully.")
-    except smtplib.SMTPAuthenticationError:
-        notify("Login failed — check that GMAIL_APP_PASSWORD is a valid Gmail App Password.", False)
-    except smtplib.SMTPException as e:
-        notify(f"Failed to send email: {e}", False)
-
 st.markdown("""
 <style>
 #MainMenu {visibility: hidden;}

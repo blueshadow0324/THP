@@ -25,8 +25,8 @@ def notify(text, ok=True):
     st.session_state.msg = (text, ok)
 
 def send():
-      try:
-        with open(f"{date}.json", "r", encoding="utf-8") as file:
+    try:
+      with open(f"{date}.json", "r", encoding="utf-8") as file:
             data = json.load(file)
     except FileNotFoundError:
         notify(f"No file found for {date}.json", False)

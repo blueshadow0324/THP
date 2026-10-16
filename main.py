@@ -12,10 +12,6 @@ code = ""
 submit = False
 date = datetime.datetime.now().date()
 
-# CHANGED: password is no longer in the code. Set GMAIL_APP_PASSWORD as an env var,
-# or put it in .streamlit/secrets.toml as GMAIL_APP_PASSWORD = "..."
-password = os.environ.get("GMAIL_APP_PASSWORD") or st.secrets.get("GMAIL_APP_PASSWORD", "")
-password = password.replace(" ", "")
 sender_email = "olsonwilliam11@gmail.com"
 email = "hinke71@gmail.com"
 
@@ -28,18 +24,25 @@ def notify(text, ok=True):
     st.session_state.msg = (text, ok)
 
 def send():
+    # CHANGED: send over HTTPS (Brevo API) instead of SMTP
+    api_key = os.environ.get("BREVO_API_KEY") or st.secrets.get("BREVO_API_KEY", "")
     try:
-        # CHANGED: port 587 + STARTTLS instead of 465 + SSL, with a timeout
-        with smtplib.SMTP("smtp.gmail.com", 587, timeout=20) as server:
-            server.ehlo()
-            server.starttls()
-            server.ehlo()
-            server.login(sender_email, password)
-            server.send_message(msg)
-        notify("Email sent successfully.")
-    except smtplib.SMTPAuthenticationError:
-        notify("Login failed: check that GMAIL_APP_PASSWORD is a valid Gmail App Password.", False)
-    except (smtplib.SMTPException, OSError) as e:  # CHANGED: also catches network/timeout errors
+        r = requests.post(
+            "https://api.brevo.com/v3/smtp/email",
+            headers={"api-key": api_key, "accept": "application/json", "content-type": "application/json"},
+            json={
+                "sender": {"name": "Svarsform", "email": sender_email},
+                "to": [{"email": email}],
+                "subject": str(date),
+                "textContent": body_text,
+            },
+            timeout=20,
+        )
+        if r.status_code in (200, 201):
+            notify("Email sent successfully.")
+        else:
+            notify(f"Failed to send email: {r.status_code} {r.text}", False)
+    except requests.RequestException as e:
         notify(f"Failed to send email: {e}", False)
 
     body_text = json.dumps(data, indent=2, ensure_ascii=False)

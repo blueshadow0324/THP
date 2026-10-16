@@ -29,14 +29,18 @@ def notify(text, ok=True):
 
 def send():
     try:
-        with open(f"{date}.json", "r", encoding="utf-8") as file:
-            data = json.load(file)
-    except FileNotFoundError:
-        notify(f"No file found for {date}.json", False)
-        return
-    except json.JSONDecodeError as e:
-        notify(f"Invalid JSON in {date}.json: {e}", False)
-        return
+        # CHANGED: port 587 + STARTTLS instead of 465 + SSL, with a timeout
+        with smtplib.SMTP("smtp.gmail.com", 587, timeout=20) as server:
+            server.ehlo()
+            server.starttls()
+            server.ehlo()
+            server.login(sender_email, password)
+            server.send_message(msg)
+        notify("Email sent successfully.")
+    except smtplib.SMTPAuthenticationError:
+        notify("Login failed: check that GMAIL_APP_PASSWORD is a valid Gmail App Password.", False)
+    except (smtplib.SMTPException, OSError) as e:  # CHANGED: also catches network/timeout errors
+        notify(f"Failed to send email: {e}", False)
 
     body_text = json.dumps(data, indent=2, ensure_ascii=False)
 

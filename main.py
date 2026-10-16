@@ -26,7 +26,7 @@ def notify(text, ok=True):
 
 def send():
     try:
-      with open(f"{date}.json", "r", encoding="utf-8") as file:
+        with open(f"{date}.json", "r", encoding="utf-8") as file:
             data = json.load(file)
     except FileNotFoundError:
         notify(f"No file found for {date}.json", False)
@@ -35,8 +35,8 @@ def send():
         notify(f"Invalid JSON in {date}.json: {e}", False)
         return
 
-    body_text = json.dumps(data, indent=2, ensure_ascii=False)  # <- this line must be here
-    # CHANGED: send over HTTPS (Brevo API) instead of SMTP
+    body_text = json.dumps(data, indent=2, ensure_ascii=False)
+
     api_key = os.environ.get("BREVO_API_KEY") or st.secrets.get("BREVO_API_KEY", "")
     try:
         r = requests.post(
@@ -56,8 +56,6 @@ def send():
             notify(f"Failed to send email: {r.status_code} {r.text}", False)
     except requests.RequestException as e:
         notify(f"Failed to send email: {e}", False)
-
-    body_text = json.dumps(data, indent=2, ensure_ascii=False)
 
     msg = MIMEMultipart()
     msg["From"] = sender_email

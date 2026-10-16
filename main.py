@@ -3,18 +3,19 @@ import json
 import time
 import datetime
 import smtplib
-from email.message import EmailMessage
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
-from email.mime.application import MIMEApplication
 import os
 
 st.title("Svarsform")
 code = ""
 submit = False
 date = datetime.datetime.now().date()
-print(date)
-password = "nrgp zrcz wpts dtck"
+
+# CHANGED: password is no longer in the code. Set GMAIL_APP_PASSWORD as an env var,
+# or put it in .streamlit/secrets.toml as GMAIL_APP_PASSWORD = "..."
+password = os.environ.get("GMAIL_APP_PASSWORD") or st.secrets.get("GMAIL_APP_PASSWORD", "")
+password = password.replace(" ", "")
 sender_email = "olsonwilliam11@gmail.com"
 email = "hinke71@gmail.com"
 
@@ -22,18 +23,21 @@ email = "hinke71@gmail.com"
 if "step" not in st.session_state:
     st.session_state.step = 1
 
+# CHANGED: messages survive st.rerun() so you can actually see send results
+def notify(text, ok=True):
+    st.session_state.msg = (text, ok)
+
 def send():
     try:
         with open(f"{date}.json", "r", encoding="utf-8") as file:
             data = json.load(file)
     except FileNotFoundError:
-        print(f"No file found for {date}.json")
+        notify(f"No file found for {date}.json", False)
         return
     except json.JSONDecodeError as e:
-        print(f"Invalid JSON in {date}.json: {e}")
+        notify(f"Invalid JSON in {date}.json: {e}", False)
         return
 
-    # Turn the parsed JSON back into readable text for the email body
     body_text = json.dumps(data, indent=2, ensure_ascii=False)
 
     msg = MIMEMultipart()
@@ -46,24 +50,24 @@ def send():
         with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
             server.login(sender_email, password)
             server.send_message(msg)
-        print("Email sent successfully.")
+        notify("Email sent sucessfully.")
     except smtplib.SMTPAuthenticationError:
-        print("Login failed — check that GMAIL_APP_PASSWORD is a valid Gmail App Password.")
+        notify("Login failed — check that GMAIL_APP_PASSWORD is a valid Gmail App Password.", False)
     except smtplib.SMTPException as e:
-        print(f"Failed to send email: {e}")
+        notify(f"Failed to send email: {e}", False)
 
 st.markdown("""
 <style>
-/* Hide main menu */
 #MainMenu {visibility: hidden;}
-
-/* Hide footer */
 footer {visibility: hidden;}
-
-/* Hide header (Deploy button, etc.) */
 header {visibility: hidden;}
 </style>
 """, unsafe_allow_html=True)
+
+# CHANGED: show a pending message (if any) once
+if "msg" in st.session_state:
+    text, ok = st.session_state.pop("msg")
+    (st.success if ok else st.error)(text)
 
 if st.session_state.step == 1:
     with st.form("FORM"):
@@ -71,8 +75,8 @@ if st.session_state.step == 1:
         submit = st.form_submit_button("Enter")
 
     if submit:
-      st.session_state._submitted_code = code
-      st.session_state._process = True
+        st.session_state._submitted_code = code
+        st.session_state._process = True
 
 if st.session_state.get("_process"):
     with open("codes.json", "r", encoding="utf-8") as file:
@@ -80,7 +84,7 @@ if st.session_state.get("_process"):
         try:
             player_ID = data[st.session_state._submitted_code]  # String
             st.session_state.step = 2
-        except:
+        except KeyError:  # CHANGED: was a bare except
             if "admin" == st.session_state._submitted_code:
                 send()
 
@@ -104,48 +108,30 @@ elif st.session_state.step == 2:
         fys["med"] = st.checkbox(" Medel😐 ")
         fys["neg"] = st.checkbox(" Dåligt👎 ")
         fys["comment"] = st.text_input("Kommentar: ")
+
+        # TODO (after training): add the actual questions here, and store their
+        # answers in extra dicts (e.g. q = {}) the same way as phy / fys above.
+        # Then add them to the `data[code]` entry in the save block below.
+
         submit = st.form_submit_button("Skicka In!")
 
-        currentCode = st.session_state._submitted_code
-
         if submit:
-            for key in fys:
-                if fys[key]:
-                    for k in phy:
-                        if phy[k]:
-                            st.dialog("Skickat in resultatet!")
-                            try:
-                                with open(f"{date}.json", "r") as file:
-                                    data = json.load(file)
-                            except:
-                                data = {}
-                                with open(f"{data}.json", "w") as file:
-                                    json.dump(data, file, indent=4)
-                            try:
-                                with open(f"{date}.json", "r") as file:
-                                    data = json.load(file)
-                            except:
-                                with open(f"{data}.json", "w") as file:
-                                    json.dump(data, file, indent=4)
+            # CHANGED: only the checkboxes count (a comment alone used to pass the check)
+            if any(phy[k] for k in ("pos", "med", "neg")) and any(fys[k] for k in ("pos", "med", "neg")):
+                code = st.session_state._submitted_code
+                try:
+                    with open(f"{date}.json", "r", encoding="utf-8") as file:
+                        data = json.load(file)
+                except (FileNotFoundError, json.JSONDecodeError):
+                    data = {}  # CHANGED: old code wrote to a file named "{}.json"
 
-                            if st.session_state._submitted_code not in data:
-                                data[st.session_state._submitted_code] = {}
-                                data[st.session_state._submitted_code]["phy"] = {}
-                                data[st.session_state._submitted_code]["fys"] = {}
-                            with open(f"{date}.json", "w") as file:
-                                json.dump(data, file, indent=4)
-                            with open(f"{date}.json", "r") as file:
-                                data = json.load(file)
-                            for i in fys:
-                                data[st.session_state._submitted_code]["fys"][i] = fys[i]
-                            for j in phy:
-                                data[st.session_state._submitted_code]["phy"][j] = phy[j]
-                            with open(f"{date}.json", "w") as file:
-                                json.dump(data, file, indent=4)
-                            time.sleep(1)
-                            st.session_state._process = False
-                            st.session_state.step = 1
-                            st.rerun()
-            st.warning("Inget resultatet är sant!")
+                data[code] = {"phy": phy, "fys": fys}
+                with open(f"{date}.json", "w", encoding="utf-8") as file:
+                    json.dump(data, file, indent=4, ensure_ascii=False)
 
-    
+                notify("Skickat in resultatet!")  # CHANGED: st.dialog is a decorator, not a message
+                st.session_state._process = False
+                st.session_state.step = 1
+                st.rerun()
+            else:
+                st.warning("Inget resultatet är sant!")
